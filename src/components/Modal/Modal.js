@@ -17,6 +17,7 @@ export function Modal({ alt, bigImage, onClose }) {
         onClose();
       }
     };
+
     window.addEventListener('keydown', onEscapeCloseHandle);
     disableBodyScroll(document);
     return () => {
