@@ -1,43 +1,45 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import {
+  disableBodyScroll,
+  enableBodyScroll,
+  clearAllBodyScrollLocks,
+} from 'body-scroll-lock';
 import PropTypes from 'prop-types';
 import { Overlay, ModalWindow } from './Modal.styled';
 
 const modalRoot = document.querySelector('#image-modal');
 
-export class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.onEscapeCloseHandle);
-  }
+export function Modal({ alt, bigImage, onClose }) {
+  useEffect(() => {
+    const onEscapeCloseHandle = event => {
+      if (event.code === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onEscapeCloseHandle);
+    disableBodyScroll(document);
+    return () => {
+      window.removeEventListener('keydown', onEscapeCloseHandle);
+      enableBodyScroll(document);
+      clearAllBodyScrollLocks();
+    };
+  }, [onClose]);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onEscapeCloseHandle);
-  }
-
-  onBackdropCLick = event => {
+  const onBackdropCLick = event => {
     if (event.target === event.currentTarget) {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  onEscapeCloseHandle = event => {
-    if (event.code === 'Escape') {
-      this.props.onClose();
-    }
-  };
-
-  render() {
-    const { alt } = this.props;
-
-    return createPortal(
-      <Overlay onClick={this.onBackdropCLick}>
-        <ModalWindow>
-          <img src={this.props.bigImage} alt={alt} />
-        </ModalWindow>
-      </Overlay>,
-      modalRoot
-    );
-  }
+  return createPortal(
+    <Overlay onClick={onBackdropCLick}>
+      <ModalWindow>
+        <img src={bigImage} alt={alt} loading="lazy" />
+      </ModalWindow>
+    </Overlay>,
+    modalRoot
+  );
 }
 
 PropTypes.Modal = {
@@ -45,3 +47,38 @@ PropTypes.Modal = {
   alt: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
 };
+
+// export class Modal extends Component {
+//   componentDidMount() {
+//     window.addEventListener('keydown', this.onEscapeCloseHandle);
+//   }
+
+//   componentWillUnmount() {
+//     window.removeEventListener('keydown', this.onEscapeCloseHandle);
+//   }
+
+//   onBackdropCLick = event => {
+//     if (event.target === event.currentTarget) {
+//       this.props.onClose();
+//     }
+//   };
+
+//   onEscapeCloseHandle = event => {
+//     if (event.code === 'Escape') {
+//       this.props.onClose();
+//     }
+//   };
+
+//   render() {
+//     const { alt } = this.props;
+
+//     return createPortal(
+//       <Overlay onClick={this.onBackdropCLick}>
+//         <ModalWindow>
+//           <img src={this.props.bigImage} alt={alt} />
+//         </ModalWindow>
+//       </Overlay>,
+//       modalRoot
+//     );
+//   }
+// }
