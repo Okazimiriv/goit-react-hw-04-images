@@ -31,8 +31,8 @@ export function Modal({ alt, bigImage, onClose }) {
   return createPortal(
     <Overlay
       onClick={onBackdropCLick}
-      onAfterOpen={() => disableBodyScroll(document)}
-      onAfterClose={() => enableBodyScroll(document)}
+      // onAfterOpen={() => disableBodyScroll(document)}
+      // onAfterClose={() => enableBodyScroll(document)}
     >
       <ModalWindow>
         <img src={bigImage} alt={alt} loading="lazy" />
