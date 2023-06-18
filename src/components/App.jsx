@@ -33,22 +33,20 @@ export default function App() {
     if (page > 1) {
       setTimeout(() => {
         window.scrollBy({
-          top: 500 * 3,
+          top: window.innerHeight - 72 - 80,
           behavior: 'smooth',
         });
       }, 500);
-    } 
-    if (query.includes('id/'))
-      setQuery(query => query.split('/')[1]);
-    
-    getImages(query, page);    
+    }     
+          
+    getImages(query.split('/')[1], page);    
   },[query, page])
     
   const getImages = (query, page) => {     
      setIsLoading(true);
      setError(null);
 
-      ImageService.getImages(query, page)
+    ImageService.getImages(query, page)    
         .then(response => {
           const { hits, totalHits } = response;          
 
@@ -61,16 +59,12 @@ export default function App() {
           setIsShowBtn(1 < Math.ceil(totalHits / PER_PAGE))           
         })
         .catch(error => setError('Oops! Something went wrong! Try reloading the page!'))          
-        .finally(() => setIsLoading(false));
+      .finally(() => setIsLoading(false));   
   };  
 
   const onSearchSubmit = value => {
-    console.log(value);
-    query === value
-      ? setQuery(`${Date.now()}id/${value}`)
-      : setQuery(value);
-
-    setQuery(value);
+    setQuery(`${Date.now()}/${value}`);
+    // setQuery(value);
     setImages([]);
     setPage(1);
     setIsLoading(false);
