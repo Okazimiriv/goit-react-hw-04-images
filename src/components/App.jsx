@@ -27,97 +27,49 @@ export default function App() {
   const [modalImage, setModalImage] = useState('');
 
   useEffect(() => { 
-    //  if (page === 1) {
-    //   return;
-    // }
-    // if (page > 1) {
-    //   setTimeout(() => {
-    //       window.scrollBy({
-    //         top: 500 * 3,
-    //         behavior: 'smooth',
-    //       });
-    //     }, 500);
-    // }
-    //  getImages(query, page);
-  },[ query, page, images])
+    if (!query || !page) {
+      return;
+    }
+    if (page > 1) {
+      setTimeout(() => {
+        window.scrollBy({
+          top: 500 * 3,
+          behavior: 'smooth',
+        });
+      }, 500);
+    } 
+    if (query.includes('id/'))
+      setQuery(query => query.split('/')[1]);
     
-
-//   componentDidUpdate(prevProps, prevState) {
-//     const { query, page, images } = this.state;
-
-//     if (prevState.query !== query || prevState.page !== page) {
-//       this.getImages(query, page);
-//     }
-//      if (prevState.images !== images) {
-//       setTimeout(() => {
-//         window.scrollBy({
-//           top: 500 * 3,
-//           behavior: 'smooth',
-//         });
-//       }, 500);
-//     }
-//   }
-
-   const getImages = (query, page) => {     
+    getImages(query, page);    
+  },[query, page])
+    
+  const getImages = (query, page) => {     
      setIsLoading(true);
      setError(null);
 
       ImageService.getImages(query, page)
         .then(response => {
-          const { hits, totalHits } = response;
-          console.log(response);
+          const { hits, totalHits } = response;          
 
           if (!hits.length) {
             setIsEmpty(true);
             setIsShowBtn(false);            
             return;
           }
-          setImages(prevState => [...prevState, ...hits])
-          // setImages(images => [...images, ...hits])//?
-          setShowModal(1 < Math.ceil(totalHits / PER_PAGE))  
-          // this.setState(prevState => ({//?
-          //   images: [...prevState.images, ...hits],//?
-          //   isShowBtn: 1 < Math.ceil(totalHits / PER_PAGE)  // ?        
-        //   }));
+          setImages(prevState => [...prevState, ...hits])       
+          setIsShowBtn(1 < Math.ceil(totalHits / PER_PAGE))           
         })
         .catch(error => setError('Oops! Something went wrong! Try reloading the page!'))          
         .finally(() => setIsLoading(false));
-  };
-  
-
-  // /   getImages = (query, page) => {
-//     this.setState({ isLoading: true, error: null });
-
-//     ImageService.getImages(query, page)
-//       .then(response => {
-//         const { hits, totalHits } = response;
-//         console.log(response);
-       
-//         if (!hits.length) {
-//           this.setState({
-//             isEmpty: true,
-//             isShowBtn: false,
-//           });
-//           return;
-//         }
-//         this.setState(prevState => ({
-//           images: [...prevState.images, ...hits],
-//           isShowBtn: 1 < Math.ceil(totalHits / PER_PAGE),
-//           // isShowBtn: true,
-//         }));
-//       })
-//       .catch((error) => {
-//           this.setState({ error: 'Oops! Something went wrong! Try reloading the page!' });
-//         })
-//       .finally(() => this.setState({ isLoading: false }));
-//   };
-  
+  };  
 
   const onSearchSubmit = value => {
-    // console.log(value);
-    // query === value
-    //   ? setQuery(`${Date.now()}id/${value}`)
-    //   : setQuery(value);
+    console.log(value);
+    query === value
+      ? setQuery(`${Date.now()}id/${value}`)
+      : setQuery(value);
+
     setQuery(value);
     setImages([]);
     setPage(1);
@@ -131,7 +83,7 @@ export default function App() {
   };
 
   const onLoadMore = () => {
-    setPage(prevPage => prevPage + 1 );//setPage(page => page + 1)?
+    setPage(prevPage => prevPage + 1 );
       // this.setState(prevState => ({ page: prevState.page + 1 }));
     };
 
