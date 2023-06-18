@@ -1,10 +1,6 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  disableBodyScroll,
-  enableBodyScroll,
-  clearAllBodyScrollLocks,
-} from 'body-scroll-lock';
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import PropTypes from 'prop-types';
 import { Overlay, ModalWindow } from './Modal.styled';
 
@@ -23,7 +19,6 @@ export function Modal({ alt, bigImage, onClose }) {
     return () => {
       window.removeEventListener('keydown', onEscapeCloseHandle);
       enableBodyScroll(document);
-      clearAllBodyScrollLocks();
     };
   }, [onClose]);
 
@@ -34,7 +29,11 @@ export function Modal({ alt, bigImage, onClose }) {
   };
 
   return createPortal(
-    <Overlay onClick={onBackdropCLick}>
+    <Overlay
+      onClick={onBackdropCLick}
+      onAfterOpen={() => disableBodyScroll(document)}
+      onAfterClose={() => enableBodyScroll(document)}
+    >
       <ModalWindow>
         <img src={bigImage} alt={alt} loading="lazy" />
       </ModalWindow>
@@ -48,6 +47,8 @@ PropTypes.Modal = {
   alt: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
 };
+
+// const modalRoot = document.querySelector('#image-modal');
 
 // export class Modal extends Component {
 //   componentDidMount() {
